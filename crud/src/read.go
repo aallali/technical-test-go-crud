@@ -31,7 +31,7 @@ func GetUsers(c *gin.Context) {
 		}
 		defer rows.Close()
 
-		var users = []User{}
+		var users []User
 		for rows.Next() {
 			var user User
 			if err := rows.Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.Phone, &user.Created_at); err != nil {

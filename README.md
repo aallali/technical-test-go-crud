@@ -2,12 +2,17 @@
 
 ### Description
 simple CRUD rest api to manage users table in mysql:
-    - create user (first name, last name, email and phone)
-    - update user by Id
-    - delete user by Id
-    - fetch a user by Id
-    - fetch all users in table
+- create user (first name, last name, email and phone)
+- update user by Id
+- delete user by Id
+- fetch a user by Id
+- fetch all users in table
 
+### TODO: 
+##### (i forgot that it was required to export the data from users table to Excel file, then upload it to AWS S3 bucket)
+- [x] Export data from Database (users table) to excel 
+    - [x] stream row by row to avoid load all data to RAM
+- [ ] Upload file created to AWS S3 bucket  
 ### Rules:
 ##### Schema
 - first name : string, length 1-30, required
@@ -44,11 +49,13 @@ CREATE TABLE IF NOT EXISTS users (
 │   ├── delete.go           # delete user by id route
 │   ├── read.go             # fetch users routes (all or single by Id)
 │   ├── update.go           # update a user row by id
+│   ├── export.go           # export data from 'users' table to excel then upload it to AWS
 │   └── helper  
 │       ├── config.go       # User model declared here
 │       ├── db.go           # all config of MySql database
 │       ├── lib.go          # helper functions in routes
 │       └── validator.go    # validators of input functions
+├── Users-export-10-01-2023.xlsx # file exported containing all data of users table
 └── test
     └── nuitee.postman_collection.json  # postman request tests (import and test)
 ```

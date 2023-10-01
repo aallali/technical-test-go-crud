@@ -17,6 +17,6 @@ func main() {
 	r.PATCH("/users", UpdateUser)
 	r.GET("/users", GetUsers)
 	r.DELETE("/users/:id", DeleteUser)
-
+	r.GET("/export", ExportToS3)
 	r.Run(":1337")
 }
