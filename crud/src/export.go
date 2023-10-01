@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	. "nuite/crud/src/helper"
+	"os"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +19,7 @@ var fileName string
 func users_table_to_excel() (err error) {
 	currentTime := time.Now()
 
-	fileName = "Users-export-" + currentTime.Format("01-02-2006") + ".xlsx"
+	fileName = "users-backup-" + currentTime.Format("01-02-2006_15-04-05") + ".xlsx"
 	xlsx := excelize.NewFile()
 
 	// Create a new sheet and set its name
@@ -63,8 +67,33 @@ func users_table_to_excel() (err error) {
 	return
 }
 
-func uploadFileToS3() {
-	fmt.Printf("Uploading (%s) to S3 Bucket ...\n", fileName)
+func uploadFileToS3(fileName string, bucketName string) error {
+	// Create a new AWS session
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(os.Getenv("S3_bucket_region")), // specify the region of your bucket
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// Init S3 service client
+	svc := s3.New(sess)
+
+	// Open the file for reading
+	file, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close() // close file when function is done
+
+	// Upload the file to the S3 bucket
+	_, err = svc.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(fileName),
+		Body:   file,
+	})
+	return err
 }
 
 func ExportToS3(c *gin.Context) {
@@ -72,6 +101,9 @@ func ExportToS3(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	uploadFileToS3()
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Data exported in (%s.xls) to S3 Bucket.", fileName)})
+	err = uploadFileToS3(fileName, os.Getenv("S3_bucket_name"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Data exported in (%s) to S3 Bucket.", fileName)})
 }

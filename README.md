@@ -7,12 +7,18 @@ simple CRUD rest api to manage users table in mysql:
 - delete user by Id
 - fetch a user by Id
 - fetch all users in table
+- export all users data to excel + upload it to AWS S3 Bucket
 
 ### TODO: 
 ##### (i forgot that it was required to export the data from users table to Excel file, then upload it to AWS S3 bucket 😅)
 - [x] Export data from Database (users table) to excel 
     - [x] stream row by row to avoid load all data to RAM
-- [ ] Upload file created to AWS S3 bucket  
+- [x] Upload file created to AWS S3 bucket  
+    - [x] create access keys to AWS for our local env
+        - `DONT FORGET TO CONFIG THAT IN UR MACHINE BEFORE TESTING THE EXPORT`
+    - [x] create the S3 bucket (let's name it `nuitee-test-file-upload`)
+    - [x] connect to S3 from golang (thanks GPT)
+    - [x] check if file exists in AWS bucket
 ### Rules:
 ##### 1-Schema
 - first name : string, length 1-30, required
@@ -55,7 +61,7 @@ CREATE TABLE IF NOT EXISTS users (
 │       ├── db.go           # all config of MySql database
 │       ├── lib.go          # helper functions in routes
 │       └── validator.go    # validators of input functions
-├── Users-export-10-01-2023.xlsx # file exported containing all data of users table
+├── users-backup-10-01-2023_19-18-46.xlsx # file exported containing all data of users table
 └── test
     └── nuitee.postman_collection.json  # postman request tests (import and test)
 ```
@@ -67,6 +73,9 @@ CREATE TABLE IF NOT EXISTS users (
 mysql_user=root
 mysql_pass=root
 mysql_host=localhost:3306
+
+S3_bucket_region="your bucket region here"
+S3_bucket_name="your bucket name here"
 ```
 
 
