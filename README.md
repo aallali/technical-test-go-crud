@@ -9,17 +9,17 @@ simple CRUD rest api to manage users table in mysql:
 - fetch all users in table
 
 ### TODO: 
-##### (i forgot that it was required to export the data from users table to Excel file, then upload it to AWS S3 bucket)
+##### (i forgot that it was required to export the data from users table to Excel file, then upload it to AWS S3 bucket 😅)
 - [x] Export data from Database (users table) to excel 
     - [x] stream row by row to avoid load all data to RAM
 - [ ] Upload file created to AWS S3 bucket  
 ### Rules:
-##### Schema
+##### 1-Schema
 - first name : string, length 1-30, required
 - last name : string, length 1-30, required
 - email : string, valid email, required, unique
 - phone: string, valid numbers, required
-#### Table
+#### 2-Table
 the database table is created using this schema (created one if not exists):
 ```sql
 CREATE TABLE IF NOT EXISTS users (
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ```
 
-##### Duplication:
+##### 3-Duplication:
 - update/or create a user requires the email to be unique to this user
 
 ### Folder structure:
